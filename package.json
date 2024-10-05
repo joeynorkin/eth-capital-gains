@@ -1,0 +1,18 @@
+{
+  "name": "eth-capital-gains",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@js-joda/core": "^5.6.3",
+    "ethers": "^6.13.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "typescript": "^5.6.2"
+  }
+}
