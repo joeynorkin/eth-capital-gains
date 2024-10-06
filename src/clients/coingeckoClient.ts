@@ -23,4 +23,4 @@ export const getMarketChart = async (coinId: string, currency: string) => {
 /**
  * @returns [number, number][], with each item being [timestamp, price]
  */
-export const getEthCoinPrices = async () => (await getMarketChart('ethereum', 'usd')).prices
+export const getEthPricesUsd = async () => (await getMarketChart('ethereum', 'usd')).prices

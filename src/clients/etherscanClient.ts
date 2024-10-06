@@ -18,7 +18,7 @@ export const getTransactions = async (ethAddress: string ) => {
     endblock: 99999999,
     page: 1,
     offset: 10,
-    sort: 'desc',
+    sort: 'asc',
   }) as TransactionResponseType[]
 }
 

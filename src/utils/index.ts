@@ -12,8 +12,8 @@ export const formatBalance = (balance: number | string) =>
     : balance.toString()
   ).toFixed(2)
 
-export const formatTimestamp = (tx: TransactionResponseType) => 
-  LocalDate.ofEpochDay(Number(tx.timeStamp)).format(DateTimeFormatter.ofPattern('dd-MM-yyyy'))
+export const formatTimestamp = (ts: number | string) => 
+  LocalDate.ofEpochDay(Number(ts)).format(DateTimeFormatter.ofPattern('dd-MM-yyyy'))
 
 export const timestampToMilliseconds = (timestamp: string) => parseInt(timestamp) * 1000
 
@@ -31,3 +31,9 @@ export const getTimestampStartOfDayUTC = (timestamp: string) => {
   date.setUTCHours(0, 0, 0, 0)
   return Math.floor(date.getTime() / 1000)
 }
+
+// Util for transactions returned from Etherscan which stores addresses in lowercase.
+export const isReceived = (tx: TransactionResponseType, address: string) => tx.to === address.toLowerCase()
+
+// Util for transactions returned from Etherscan which stores addresses in lowercase.
+export const isSent = (tx: TransactionResponseType, address: string) => tx.from === address.toLowerCase()
