@@ -1,4 +1,4 @@
-import { DateTimeFormatter, LocalDate } from '@js-joda/core'
+import { DateTimeFormatter, Instant, LocalDate } from '@js-joda/core'
 import { TransactionResponseType } from '../clients/etherscanClient'
 
 export const convertEthToCurrency = (eth: number | string, price: number) => {
@@ -6,14 +6,25 @@ export const convertEthToCurrency = (eth: number | string, price: number) => {
   return formatBalance(balance * price)
 }
 
-export const formatBalance = (balance: number | string) => 
-  parseFloat(typeof balance === 'string' 
-    ? balance 
+/**
+ * 
+ * @param balance 
+ * @param decDigits Default value: 2
+ * @returns 
+ */
+export const formatBalance = (balance: number | string, decDigits: number = 2) => 
+  parseFloat(typeof balance === 'string'
+    ? balance
     : balance.toString()
-  ).toFixed(2)
+  ).toFixed(decDigits)
+
+export const roundDecimals = (arg: number | string, decDigits: number) =>
+  decDigits < 1
+    ? formatBalance(arg)
+    : formatBalance(arg, decDigits)
 
 export const formatTimestamp = (ts: number | string) => 
-  LocalDate.ofEpochDay(Number(ts)).format(DateTimeFormatter.ofPattern('dd-MM-yyyy'))
+  LocalDate.ofInstant(Instant.ofEpochSecond(Number(ts))).format(DateTimeFormatter.ofPattern('MM-dd-yyyy'))
 
 export const timestampToMilliseconds = (timestamp: string) => parseInt(timestamp) * 1000
 
@@ -30,6 +41,10 @@ export const getTimestampStartOfDayUTC = (timestamp: string) => {
   const date = new Date(parseInt(timestamp) * 1000)
   date.setUTCHours(0, 0, 0, 0)
   return Math.floor(date.getTime() / 1000)
+}
+
+export const convertTimestampSecondsToDate = (timestamp: string) => {
+  return new Date(parseInt(timestamp) * 1000)
 }
 
 // Util for transactions returned from Etherscan which stores addresses in lowercase.

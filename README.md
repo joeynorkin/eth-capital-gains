@@ -1,12 +1,11 @@
 ## Capital Gains for ETH Transactions
+Calculates capital gains of sent transactions of past year.
 
 ### Running locally:
 
 ```sh
-$ nvm use
-$ yarn
-$ yarn build
-$ yarn start
+nvm use
+yarn && yarn build && yarn start
 ```
 
 ### Environment:
