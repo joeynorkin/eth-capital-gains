@@ -32,8 +32,8 @@ export const timestampToMilliseconds = (timestamp: string) => parseInt(timestamp
  * Given a timestamp in seconds from epoch, return a timestamp from beginning of UTC day.
  * Returns new timestamp as a number.
  * 
- * E.g. input:  5526498 -> Thu Mar 05 1970 23:08:18 GMT+0000
- *      output: 5443200 -> Thu Mar 05 1970 00:00:00 GMT+0000
+ * E.g. input:  1711214484 (represented as Sat Mar 23 2024 17:21:24 GMT+0000)
+ *      output: 1711152000 (represented as Sat Mar 23 2024 00:00:00 GMT+0000)
  * 
  * @param timestamp
  */
