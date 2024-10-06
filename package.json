@@ -4,11 +4,12 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index",
+    "start": "node --env-file=.env dist/demo",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@js-joda/core": "^5.6.3",
+    "coingecko-api-v3": "^0.0.29",
     "ethers": "^6.13.3"
   },
   "devDependencies": {

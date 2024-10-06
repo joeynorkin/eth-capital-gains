@@ -1,1 +1,0 @@
-export const logToStdout = (msg: string) => console.log(msg)

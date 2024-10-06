@@ -41,6 +41,13 @@ aes-js@4.0.0-beta.5:
   resolved "https://registry.yarnpkg.com/aes-js/-/aes-js-4.0.0-beta.5.tgz#8d2452c52adedebc3a3e28465d858c11ca315873"
   integrity sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q==
 
+coingecko-api-v3@^0.0.29:
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/coingecko-api-v3/-/coingecko-api-v3-0.0.29.tgz#68b43ecae04519ca9f669da44df596e868861845"
+  integrity sha512-4aF0mU6Pwmo78W4NsPbMslU3ooeSa2Dq8a8PFR+5+wWcWvTBMiUZgfy9UvybynYVsnvYCoyxtNwxTiMZBeZh4w==
+  dependencies:
+    https "^1.0.0"
+
 ethers@^6.13.3:
   version "6.13.3"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.13.3.tgz#b87afdadb91cc8df5f56b9c59c96e5b206f4a600"
@@ -53,6 +60,11 @@ ethers@^6.13.3:
     aes-js "4.0.0-beta.5"
     tslib "2.4.0"
     ws "8.17.1"
+
+https@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/https/-/https-1.0.0.tgz#3c37c7ae1a8eeb966904a2ad1e975a194b7ed3a4"
+  integrity sha512-4EC57ddXrkaF0x83Oj8sM6SLQHAWXw90Skqu2M4AEWENZ3F02dFJE/GARA8igO79tcgYqGrD7ae4f5L3um2lgg==
 
 tslib@2.4.0:
   version "2.4.0"
