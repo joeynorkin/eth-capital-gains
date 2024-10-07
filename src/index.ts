@@ -85,16 +85,17 @@ const main = async (address: string) => {
   )
 }
 
-const [,, addr, network] = process.argv
+const [
+  eth_addr,
+  // TODO: network,
+] = process.argv.slice(2)
+
 const { ETH_ADDRESS } = process.env
 
-if (addr) {
-  main(addr)
-}
-
-if (!ETH_ADDRESS) {
+const address = eth_addr ?? ETH_ADDRESS
+if (!address) {
   console.log('ETH_ADDRESS must be defined!')
   process.exit(1)
 }
 
-main(ETH_ADDRESS)
+main(address)
