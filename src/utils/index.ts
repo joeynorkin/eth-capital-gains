@@ -1,4 +1,4 @@
-import { DateTimeFormatter, Instant, LocalDate } from '@js-joda/core'
+import { DateTimeFormatter, Instant, LocalDate, ZoneId } from '@js-joda/core'
 import { TransactionResponseType } from '../clients/etherscanClient'
 
 export const convertEthToCurrency = (eth: number | string, price: number) => {
@@ -23,8 +23,13 @@ export const roundDecimals = (arg: number | string, decDigits: number) =>
     ? formatBalance(arg)
     : formatBalance(arg, decDigits)
 
-export const formatTimestamp = (ts: number | string) => 
-  LocalDate.ofInstant(Instant.ofEpochSecond(Number(ts))).format(DateTimeFormatter.ofPattern('MM-dd-yyyy'))
+export const formatTimestampUTC = (ts: number | string) => formatTimestamp(ts, ZoneId.UTC)
+
+export const formatTimestamp = (ts: number | string, zoneId?: ZoneId) => 
+  LocalDate.ofInstant(
+    Instant.ofEpochSecond(Number(ts)),
+    zoneId ?? undefined,
+  ).format(DateTimeFormatter.ofPattern('MM-dd-yyyy'))
 
 export const timestampToMilliseconds = (timestamp: string) => parseInt(timestamp) * 1000
 
@@ -47,8 +52,8 @@ export const convertTimestampSecondsToDate = (timestamp: string) => {
   return new Date(parseInt(timestamp) * 1000)
 }
 
-// Util for transactions returned from Etherscan which stores addresses in lowercase.
-export const isReceived = (tx: TransactionResponseType, address: string) => tx.to === address.toLowerCase()
-
-// Util for transactions returned from Etherscan which stores addresses in lowercase.
-export const isSent = (tx: TransactionResponseType, address: string) => tx.from === address.toLowerCase()
+// Utils for transactions returned from Etherscan which stores addresses in lowercase.
+export const isReceived = (tx: TransactionResponseType, address: string) =>
+  parseInt(tx.value) !== 0 && tx.to === address.toLowerCase()
+export const isSent = (tx: TransactionResponseType, address: string) =>
+  parseInt(tx.value) !== 0 && tx.from === address.toLowerCase()

@@ -1,6 +1,5 @@
 import { getEthPricesUsd } from '../clients/coingeckoClient'
 
-// type Timestamp = { timestamp: number }
 type ObjectWithTimestamp = { timestamp: number }
 
 /**

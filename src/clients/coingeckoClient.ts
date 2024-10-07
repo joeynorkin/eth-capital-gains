@@ -1,21 +1,21 @@
 import { CoinGeckoClient, type CoinMarketChartResponse } from 'coingecko-api-v3'
-import { API_KEY } from '../constants/coingeckoConstants'
+// import { API_KEY } from '../constants/coingeckoConstants'
 
 const client = new CoinGeckoClient()
 // const client = new CoinGeckoClient()
 // client.apiKey = API_KEY
 
-// export const getMarketChart = async (coinId = 'ethereum', currency = 'usd') => {
+type GetMarketChartResponse = Omit<CoinMarketChartResponse, 'prices'> & {
+  prices: [number, number][] // [timestamp, price]
+}
+
+// export const getMarketChart = async (coinId: string, currency: string) => {
 //   const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${currency}&days=365&x_cg_demo_api_key=${API_KEY}`)
 //   if (!response.ok) {
 //     throw new Error(`Response status: ${response.status}`)
 //   }
 //   return await response.json() as GetMarketChartResponse
 // }
-
-type GetMarketChartResponse = Omit<CoinMarketChartResponse, 'prices'> & {
-  prices: [number, number][] // [timestamp, price]
-}
 
 export const getMarketChart = async (coinId: string, currency: string) => {
   try {
@@ -38,7 +38,7 @@ export const getMarketChart = async (coinId: string, currency: string) => {
 export const getEthPricesUsd = async () => (await getMarketChart('ethereum', 'usd')).prices
 
 /**
- * TODO: Do we want the return timestamp to be in seconds?
+ * Do we want the returned timestamp to be in seconds?
  * 
  * @param ethPrices Array returned from {@link getEthPricesUsd}
  * @param targetTs Timestamp in milliseconds

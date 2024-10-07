@@ -1,10 +1,19 @@
 import { formatEther } from 'ethers'
 import { findEthPriceByTimestampSeconds, getEthPricesUsd } from './clients/coingeckoClient'
-import { getTransactions } from './clients/etherscanClient'
-import { convertTimestampSecondsToDate, formatBalance, formatTimestamp, getTimestampStartOfDayUTC, isReceived, isSent, roundDecimals } from './utils'
+import { getEthBalance, getTransactions } from './clients/etherscanClient'
+import {
+  convertTimestampSecondsToDate,
+  formatBalance,
+  formatTimestamp,
+  formatTimestampUTC,
+  getTimestampStartOfDayUTC,
+  isReceived,
+  isSent,
+  roundDecimals,
+} from './utils'
 
 const main = async (address: string) => {
-  const [txList, ethPricesUsd] = await Promise.all([getTransactions(address), getEthPricesUsd()])
+  const [ethBalance, txList, ethPricesUsd] = await Promise.all([getEthBalance(address), getTransactions(address), getEthPricesUsd()])
 
   // find first "received" tx
   let txIndex = txList.findIndex(tx => isReceived(tx, address))
@@ -25,12 +34,12 @@ const main = async (address: string) => {
     const ethPriceArr = findEthPriceByTimestampSeconds(ethPricesUsd, startOfDayTs)
     if (!ethPriceArr) {
       console.log(
-        `Could not find historical ETH price on ${startOfDayTs} (${formatTimestamp(startOfDayTs)}) for ` +
+        `Could not find historical ETH price on ${startOfDayTs} (${formatTimestampUTC(startOfDayTs)}) for ` +
         `(Received) Transaction[hash=${tx.hash} timeStamp=${tx.timeStamp} (${convertTimestampSecondsToDate(tx.timeStamp)})]`
       )
       process.exit(1)
     }
-    const [_ , ethPriceUsd] = ethPriceArr
+    const [_, ethPriceUsd] = ethPriceArr
     const txValueEth = parseFloat(formatEther(tx.value))
     totalSpent += ethPriceUsd * txValueEth
     totalEth += txValueEth
@@ -54,25 +63,26 @@ const main = async (address: string) => {
   const ethPriceArr = findEthPriceByTimestampSeconds(ethPricesUsd, sentTxStartOfDayTs)
   if (!ethPriceArr) {
     console.log(
-      `Could not find historical ETH price on ${sentTxStartOfDayTs} (${formatTimestamp(sentTxStartOfDayTs)}) for ` +
+      `Could not find historical ETH price on ${sentTxStartOfDayTs} (${formatTimestampUTC(sentTxStartOfDayTs)}) for ` +
       `(Sent) Transaction[hash=${sentTx.hash} timeStamp=${sentTx.timeStamp} (${formatTimestamp(sentTx.timeStamp)})]`
     )
     process.exit(1)
   }
-  const [_ , sentTxEthPriceUsd] = ethPriceArr
+  const [_, sentTxEthPriceUsd] = ethPriceArr
 
   const ethSent = formatEther(sentTx.value)
   const capGain = (sentTxEthPriceUsd - costBasis) * parseFloat(ethSent)
 
   console.log(
-    `Address: ${address}\n` +
+    `\nAddress: ${address}\n` +
+    `Balance: ${roundDecimals(ethBalance, 2)}\n` +
     `Transaction Hash: ${sentTx.hash}\n` +
-    `Date Of Transaction: ${formatTimestamp(sentTxStartOfDayTs)}\n` +
+    `Date Of Transaction: ${formatTimestampUTC(sentTxStartOfDayTs)}\n` +
     `Block Timestamp: ${sentTx.timeStamp}\n` +
     `Block Date: ${convertTimestampSecondsToDate(sentTx.timeStamp)}\n` +
-    `ETH sent: ${roundDecimals(ethSent, 3)} ETH @ $${formatBalance(sentTxEthPriceUsd)}\n` +
+    `ETH sent: ${roundDecimals(ethSent, 2)} ETH @ $${formatBalance(sentTxEthPriceUsd)}\n` +
     `Before sale, this address had ${totalEth} ETH with an average cost basis of $${formatBalance(costBasis)}\n` +
-    `Capital Gains: ${capGain < 0 ? '-$' + (formatBalance(-capGain)) : '$' + formatBalance(capGain)}`
+    `Capital Gains: ${capGain < 0 ? '-$' + (formatBalance(-capGain)) : '$' + formatBalance(capGain)}\n`
   )
 }
 
@@ -80,7 +90,7 @@ const main = async (address: string) => {
 const { ETH_ADDRESS } = process.env
 if (!ETH_ADDRESS) {
   console.log('ETH_ADDRESS must be defined!')
-  process.exit(0)
+  process.exit(1)
 }
 
 main(ETH_ADDRESS)
