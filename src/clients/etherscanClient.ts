@@ -11,7 +11,7 @@ export type TransactionResponseType = AllString<Transaction> & {
   timeStamp: string
 }
 
-export const getTransactions = async (ethAddress: string ) =>
+export const getTransactions = async (ethAddress: string) =>
   await etherscanProvider.fetch('account', {
     action: 'txlist',
     address: ethAddress,
