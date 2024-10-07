@@ -13,50 +13,49 @@ import {
 } from './utils'
 
 const main = async (address: string) => {
-  const [ethBalance, txList, ethPricesUsd] = await Promise.all([getEthBalance(address), getTransactions(address), getEthPricesUsd()])
+  const [ethBalance, txList, ethPricesUsd] = await Promise.all([
+    getEthBalance(address),
+    getTransactions(address),
+    getEthPricesUsd(),
+  ])
 
-  // find first "received" tx
+  // Get received txs up until we find a sent tx
   let txIndex = txList.findIndex(tx => isReceived(tx, address))
-
-  // find first "sent" tx
   let sentTxIndex = txList.findIndex(tx => isSent(tx, address))
+  const recTxs = txList.splice(txIndex, sentTxIndex)
 
   // TODO: 
   // if txIndex === -1, we have nothing to calculate costBasis with.
   // if sentTxIndex === -1, then we need to call getTransactions api for the next page.
   // For now assume there no more than 10 Txs, and assume there exists a "sent" tx.
 
-  const recTxs = txList.splice(txIndex, sentTxIndex)
-  let totalSpent = 0
-  let totalEth = 0
-  for (let tx of recTxs) {
+  const [totalSpent, totalEth] = recTxs.reduce(([prevTotalSpent, prevTotalEth], tx) => {
     const startOfDayTs = getTimestampStartOfDayUTC(tx.timeStamp)
-    const ethPriceArr = findEthPriceByTimestampSeconds(ethPricesUsd, startOfDayTs)
-    if (!ethPriceArr) {
+    const [, ethPriceUsd] = findEthPriceByTimestampSeconds(ethPricesUsd, startOfDayTs) ?? []
+    if (!ethPriceUsd) {
       console.log(
         `Could not find historical ETH price on ${startOfDayTs} (${formatTimestampUTC(startOfDayTs)}) for ` +
         `(Received) Transaction[hash=${tx.hash} timeStamp=${tx.timeStamp} (${convertTimestampSecondsToDate(tx.timeStamp)})]`
       )
       process.exit(1)
     }
-    const [_, ethPriceUsd] = ethPriceArr
     const txValueEth = parseFloat(formatEther(tx.value))
-    totalSpent += ethPriceUsd * txValueEth
-    totalEth += txValueEth
-  }
+    return [
+      prevTotalSpent + ethPriceUsd * txValueEth,
+      prevTotalEth + txValueEth,
+    ]
+  }, [0, 0])
 
   const costBasis = totalSpent / totalEth
 
-  const sentTx = txList.shift() // Now, the first item in list is either a "sent" tx, or the txList is empty
+  const sentTx = txList.shift()
   if (!sentTx) {
-    // get more Txs from the next "page" of API, but for now we'll just exit.
-    // When continuing CB calc with next page of Tx, we could add this current iteration
-    // of totalSpent and totalEth with the next iteration, etc.
-    //
-    // Or, we went through all Txs and there's no "sent" Tx to be found. In this case we will
-    // just calculate the costBasis since cap gains do not apply here.
-    console.log(`Couldn't to find a sentTx. Update code to retrieve Transaction`)
-    process.exit(1)
+    // TODO: get txs from next page in API then continue CB calculation.
+    // If there are no more txs, only calculate the CB since cap gains do not apply here.
+    console.log(`\nWe are unable to calculate capital gains since there are no sent transactions to be found.`)
+    console.log(`Address: ${address}`)
+    console.log(`This address has ${roundDecimals(ethBalance, 2)} ETH with an average cost basis of $${formatBalance(costBasis)}`)
+    process.exit(0)
   }
 
   const sentTxStartOfDayTs = getTimestampStartOfDayUTC(sentTx.timeStamp)
@@ -86,8 +85,13 @@ const main = async (address: string) => {
   )
 }
 
-
+const [,, addr, network] = process.argv
 const { ETH_ADDRESS } = process.env
+
+if (addr) {
+  main(addr)
+}
+
 if (!ETH_ADDRESS) {
   console.log('ETH_ADDRESS must be defined!')
   process.exit(1)

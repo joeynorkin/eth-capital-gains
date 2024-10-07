@@ -16,16 +16,12 @@ Create `.env` from the project's template:
 ```sh
 cp .env.example .env
 ```
-Then update `ETHERSCAN_API_KEY` and `COINGECKO_API_KEY` with your API Keys. For now, `ETH_ADDRESS` and `NETWORK` will also need to be defined.
-
-<!-- command line args aren't implemented yet.
+Then update `ETHERSCAN_API_KEY` and `COINGECKO_API_KEY` with your API Keys.
 
 You could also store the Ethereum address and network type into `ETH_ADDRESS` and `NETWORK`. Note that this is optional. You could instead pass them as arguments. 
 
 ```sh
-yarn start <eth_address> [<network_type>]
+yarn start [<eth_address> [<network_type>]]
 ```
 
 If NETWORK isn't provided by either of the methods, the program will default to `mainnet`.
-
--->
